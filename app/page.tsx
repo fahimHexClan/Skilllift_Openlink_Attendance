@@ -75,6 +75,7 @@ export default function CheckInPage() {
   const [stuMedium, setStuMedium] = useState('');
   const [stuFormat, setStuFormat] = useState('');
   const [stuTeam, setStuTeam]     = useState('');
+  const [stuSessions, setStuSessions] = useState<string[]>([]);
 
   // Visitor fields
   const [visName, setVisName]       = useState('');
@@ -139,12 +140,14 @@ export default function CheckInPage() {
       phone:   stuPhone,
       payId:   stuPayId,
       team:    stuTeam,
+      interest: stuSessions.length > 0 ? stuSessions.join(', ') : '',
       time:    nowTime(),
       date:    todayDate(),
     }, ...prev]);
     showToast(`✓ ${stuName} registered`, 'success');
     setSr(''); setStuPayId(''); setStuName(''); setStuProg('');
     setStuPhone(''); setStuMedium(''); setStuFormat(''); setStuTeam('');
+    setStuSessions([]);
     setAutoFilled(false);
   };
 
@@ -219,8 +222,10 @@ export default function CheckInPage() {
       ws.addRow({
         id: r.id, name: r.name, type: r.type,
         details: r.details, phone: r.phone || '',
+        sessions: r.interest || '',
         nic: r.nic || '', from: r.from || '',
-        interest: r.interest || '', time: r.time, date: r.date,
+        interest: r.type === 'Visitor' ? r.interest || '' : '',
+        time: r.time, date: r.date,
       });
     });
 
@@ -393,6 +398,53 @@ export default function CheckInPage() {
                     style={{ width:'100%', padding:'10px 13px', border:'1.5px solid var(--border)', borderRadius:9, fontFamily:'DM Sans,sans-serif', fontSize:14, color:'var(--text)', outline:'none' }}/>
                 </div>
               ))}
+            </div>
+
+            {/* Sessions multi-select for Student */}
+            <div style={{ marginTop:16 }}>
+              <label style={{ display:'block', fontSize:12, fontWeight:600, color:'var(--muted)', letterSpacing:'.03em', textTransform:'uppercase', marginBottom:8 }}>
+                Which sessions are you expecting to participate in?
+              </label>
+              <div style={{ display:'grid', gridTemplateColumns:'1fr 1fr', gap:8 }}>
+                {[
+                  'Introduction & Course registration',
+                  'Binance Account Creation',
+                  'P2P',
+                  'Fibonacci',
+                  'SMC',
+                  'RSI & Indicators',
+                  'Trading View & Candlestick patterns',
+                  'Advanced Revision',
+                ].map(session => {
+                  const checked = stuSessions.includes(session);
+                  return (
+                    <div key={session} onClick={() => setStuSessions(prev =>
+                        checked ? prev.filter(s => s !== session) : [...prev, session]
+                      )} style={{
+                      display:'flex', alignItems:'center', gap:9, padding:'9px 12px',
+                      border: `1.5px solid ${checked ? 'var(--teal)' : 'var(--border)'}`,
+                      borderRadius:9, cursor:'pointer',
+                      background: checked ? 'var(--teal-light)' : '#fff',
+                      transition:'all .15s',
+                    }}>
+                      <div style={{
+                        width:17, height:17, borderRadius:5, flexShrink:0,
+                        border: `2px solid ${checked ? 'var(--teal)' : '#cbd5e1'}`,
+                        background: checked ? 'var(--teal)' : '#fff',
+                        display:'flex', alignItems:'center', justifyContent:'center',
+                      }}>
+                        {checked && <svg width="10" height="8" viewBox="0 0 10 8" fill="none"><path d="M1 4l3 3 5-6" stroke="#fff" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"/></svg>}
+                      </div>
+                      <span style={{ fontSize:13, fontWeight: checked ? 600 : 400, color: checked ? 'var(--teal-dark)' : 'var(--text)', lineHeight:1.3 }}>{session}</span>
+                    </div>
+                  );
+                })}
+              </div>
+              {stuSessions.length > 0 && (
+                <div style={{ marginTop:8, fontSize:12, color:'var(--teal)', fontWeight:500 }}>
+                  ✓ {stuSessions.length} session{stuSessions.length > 1 ? 's' : ''} selected
+                </div>
+              )}
             </div>
 
             <button onClick={registerStudent} style={{
