@@ -94,7 +94,7 @@ export default function CheckInPage() {
 
   /* ── SR Search ── */
   const searchSR = async () => {
-    if (!sr.trim()) { showToast('SR number enter பண்ணுங்க', 'error'); return; }
+    if (!sr.trim()) { showToast('Please enter an SR number!', 'error'); return; }
     setSearching(true);
     setAutoFilled(false);
     try {
@@ -118,7 +118,7 @@ export default function CheckInPage() {
       showToast(`✓ Found: ${data.name}`, 'success');
     } catch (e: unknown) {
       const msg = e instanceof Error ? e.message : 'Not found';
-      showToast(msg + ' — manually fill பண்ணலாம்', 'error');
+      showToast(msg + ' — You can fill manually', 'error');
     } finally {
       setSearching(false);
     }
@@ -127,10 +127,10 @@ export default function CheckInPage() {
   /* ── Register Student ── */
   const registerStudent = () => {
     if (!sr.trim() || !stuName.trim()) {
-      showToast('SR number மற்றும் பெயர் கட்டாயம்!', 'error'); return;
+      showToast('SR number and name are required!', 'error'); return;
     }
     if (records.find(r => r.id === sr.trim().toUpperCase())) {
-      showToast('இந்த student ஏற்கனவே registered!', 'error'); return;
+      showToast('This student is already registered!', 'error'); return;
     }
     setRecords(prev => [{
       id:      sr.trim().toUpperCase(),
@@ -154,7 +154,7 @@ export default function CheckInPage() {
   /* ── Register Visitor ── */
   const registerVisitor = () => {
     if (!visName.trim() || !visPhone.trim()) {
-      showToast('பெயர் மற்றும் phone கட்டாயம்!', 'error'); return;
+      showToast('Name and phone number are required!', 'error'); return;
     }
     const vid = `VIS-${pad4(visCounter)}`;
     setRecords(prev => [{
@@ -177,7 +177,7 @@ export default function CheckInPage() {
 
   /* ── Clear session ── */
   const clearSession = () => {
-    if (!confirm('எல்லா data-வும் clear ஆகும். Sure-ஆ?')) return;
+    if (!confirm('All data will be cleared. Are you sure?')) return;
     setRecords([]);
     setVisCounter(1);
     try {
@@ -189,7 +189,7 @@ export default function CheckInPage() {
 
   /* ── Excel Export ── */
   const exportExcel = async () => {
-    if (!records.length) { showToast('Export பண்ண data இல்லை!', 'error'); return; }
+    if (!records.length) { showToast('No data to export!', 'error'); return; }
 
     const ExcelJS = (await import('exceljs')).default;
     const wb = new ExcelJS.Workbook();
@@ -250,7 +250,7 @@ export default function CheckInPage() {
 
   /* ── Clear all data ── */
   const clearAll = () => {
-    if (!confirm('எல்லா data-வையும் delete பண்ணணுமா? This cannot be undone.')) return;
+    if (!confirm('All data will be deleted. Are you sure? This cannot be undone.')) return;
     setRecords([]);
     setVisCounter(1);
     localStorage.removeItem('oc_records');
